@@ -62,7 +62,14 @@ const AdminPage = () => {
     <div className="container">
       <h1>Administração - Adicionar Disciplinas</h1>
 
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "200px",
+          gap: "5px",
+        }}
+      >
         <input
           type="text"
           placeholder="Nome da disciplina"
