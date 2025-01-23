@@ -53,11 +53,7 @@ const SubjectRatings = () => {
   };
 
   // Calcular média de avaliações
-  const calculateAverage = (ratings) => {
-    if (!ratings || ratings.length === 0) return 0;
-    const total = ratings.reduce((acc, curr) => acc + curr.rating, 0);
-    return (total / ratings.length).toFixed(1);
-  };
+
 
   // Gerar carinhas e cores com base na nota
   const getFaceAndColor = (value) => {
@@ -78,7 +74,6 @@ const SubjectRatings = () => {
     <div className="container">
       <h1>Avaliação de Disciplinas</h1>
 
-      {/* Seleção de disciplinas */}
       <div>
         <select
           value={selectedSubject}
@@ -93,7 +88,6 @@ const SubjectRatings = () => {
         </select>
       </div>
 
-      {/* Formulário de avaliação */}
       <div style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
         <h3>Escolha sua avaliação:</h3>
         <div
@@ -135,56 +129,6 @@ const SubjectRatings = () => {
           ></textarea>
           <button onClick={submitRating}>Enviar Avaliação</button>
         </div>
-      </div>
-
-      {/* Listagem de disciplinas */}
-      <h2>Disciplinas</h2>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {subjects.map((subject) => (
-          <div key={subject.id}>
-            <strong>{subject.name}</strong>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "5px",
-              }}
-            >
-              <p>Média: {calculateAverage(subject.ratings)} / 10 </p>
-              {getFaceAndColor(calculateAverage(subject.ratings)).icon}
-            </div>
-            <div
-              style={{ gap: "10px", display: "flex", flexDirection: "column" }}
-            >
-              {subject.ratings?.map((rating, index) => {
-                const { icon, color } = getFaceAndColor(rating.rating);
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      color,
-                      background: "lightgray",
-                      padding: "10px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                      }}
-                    >
-                      <p>Nota: {rating.rating}</p> {icon}
-                    </span>
-
-                    <span>Comentário: {rating.comment}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
       </div>
 
       <ToastContainer />
