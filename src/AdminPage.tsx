@@ -56,7 +56,7 @@ const AdminPage = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#f5f5f5",
+        height: "100vh",
       }}
     >
       <div
