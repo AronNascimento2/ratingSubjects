@@ -2,7 +2,13 @@
 //@ts-nocheck
 
 import { useEffect, useState } from "react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
@@ -36,97 +42,200 @@ const AdminPage = () => {
     }
   };
   const fetchSubjects = async () => {
-    const data = await getDocs(subjectsCollectionRef);
+    const q = query(subjectsCollectionRef, orderBy("name"));
+    const data = await getDocs(q);
     setSubjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
   useEffect(() => {
     fetchSubjects();
   }, []);
-
   const [subjects, setSubjects] = useState([]);
   const getFaceAndColor = (value) => {
-    if (value === 0) return { icon: <Angry />, color: "red" }; // Triste (vermelho)
-    if (value === 1) return { icon: <Angry />, color: "red" }; // Triste (vermelho)
-    if (value === 2) return { icon: <Frown />, color: "orange" }; // Neutro (laranja)
-    if (value === 3) return { icon: <Frown />, color: "orange" }; // Neutro (laranja)
-    if (value === 4) return { icon: <Annoyed />, color: "yellow" }; // Levemente feliz (amarelo)
-    if (value === 5) return { icon: <Annoyed />, color: "yellow" }; // Levemente feliz (amarelo)
-    if (value === 6) return { icon: <Meh />, color: "green" }; // Feliz (verde)
-    if (value === 7) return { icon: <Meh />, color: "green" }; // Feliz (verde)
-    if (value === 8) return { icon: <Smile />, color: "green" }; // Feliz (verde claro)
-    if (value === 9) return { icon: <Smile />, color: "green" }; // Muito feliz (verde claro)
-    return { icon: <Laugh />, color: "blue" }; // Extremamente feliz (azul)
-  };
-  return (
-    <div className="container">
-      <h1>Administração - Adicionar Disciplinas</h1>
+    const roundedValue = Math.round(value);
 
+    if (roundedValue === 0) return { icon: <Angry />, color: "red" };
+    if (roundedValue === 1) return { icon: <Angry />, color: "red" };
+    if (roundedValue === 2) return { icon: <Frown />, color: "orange" };
+    if (roundedValue === 3) return { icon: <Frown />, color: "orange" };
+    if (roundedValue === 4) return { icon: <Annoyed />, color: "yellow" };
+    if (roundedValue === 5) return { icon: <Annoyed />, color: "yellow" };
+    if (roundedValue === 6) return { icon: <Meh />, color: "green" };
+    if (roundedValue === 7) return { icon: <Meh />, color: "green" };
+    if (roundedValue === 8) return { icon: <Smile />, color: "green" };
+    if (roundedValue === 9) return { icon: <Smile />, color: "green" };
+    return { icon: <Laugh />, color: "blue" };
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        // minHeight: "100vh",
+        backgroundColor: "#f5f5f5",
+      }}
+    >
       <div
+        className="card"
         style={{
+          width: "900px",
+          maxWidth: "100%",
+          borderRadius: "8px",
           display: "flex",
+          justifyContent: "center",
           flexDirection: "column",
-          width: "200px",
-          gap: "5px",
+          alignItems: "center",
+          background: "white",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          boxSizing: "border-box",
+          padding: "20px",
         }}
       >
-        <input
-          type="text"
-          placeholder="Nome da disciplina"
-          value={subjectName}
-          onChange={(e) => setSubjectName(e.target.value)}
-        />
-        <button onClick={addSubject}>Adicionar</button>
-      </div>
-      <h2>Disciplinas</h2>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {subjects.map((subject) => (
-          <div key={subject.id}>
-            <strong>{subject.name}</strong>
+        <h1>Administração - Adicionar Disciplinas</h1>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "200px",
+          }}
+        >
+          <input
+            className="input"
+            type="text"
+            placeholder="Nome da disciplina"
+            value={subjectName}
+            onChange={(e) => setSubjectName(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            className="button-send"
+            onClick={addSubject}
+            style={{
+              padding: "10px",
+              borderRadius: "4px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Adicionar
+          </button>
+        </div>
+        <h2>Disciplinas</h2>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "start",
+            gap: "10px",
+       
+          }}
+        >
+          {subjects.map((subject) => (
             <div
+              key={subject.id}
               style={{
+                width: "100%",
                 display: "flex",
-                alignItems: "center",
+                flexDirection: "column",
                 justifyContent: "center",
-                gap: "5px",
+                alignItems: "center",
+                background: "white",
+                border: "1px solid gray",
+                borderRadius: "8px",
+                marginBottom: "10px",
+                padding: "10px",
+                boxSizing: "border-box",
               }}
             >
-              <p>Média: {calculateAverage(subject.ratings)} / 10 </p>
-              {getFaceAndColor(calculateAverage(subject.ratings)).icon}
-            </div>
-            <div
-              style={{ gap: "10px", display: "flex", flexDirection: "column" }}
-            >
-              {subject.ratings?.map((rating, index) => {
-                const { icon, color } = getFaceAndColor(rating.rating);
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      color,
-                      background: "lightgray",
-                      padding: "10px",
-                    }}
-                  >
-                    <span
+              <strong>{subject.name}</strong>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "gray",
+                  padding: "2px",
+                  marginBottom: "4px",
+                  borderRadius: "8px",
+                  width: "200px",
+                  gap: "10px",
+                }}
+              >
+                {(() => {
+                  const average = calculateAverage(subject.ratings);
+                  const { icon, color } = getFaceAndColor(average);
+
+                  return (
+                    <>
+                      <div style={{ fontWeight: "bold" }}>Média: </div>
+                      <p style={{ color, margin: 0 }}>{average}</p>{" "}
+                      <p style={{ color, margin: 0 }}>/ 10</p>
+                      <div
+                        style={{ color, display: "flex", alignItems: "center" }}
+                      >
+                        {icon}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              <div
+                style={{
+                  gap: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  overflow: "auto",
+                  height: "300px",                }}
+              >
+                {subject.ratings?.map((rating, index) => {
+                  const { icon, color } = getFaceAndColor(rating.rating);
+                  return (
+                    <div
+                      key={index}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
+                        width: "100%",
+                        border: "1px solid gray",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        background: "#f9f9f9",
+                        boxSizing: "border-box",
+                        wordWrap: "break-word",
                       }}
                     >
-                      <p>Nota: {rating.rating}</p> {icon}
-                    </span>
-
-                    <span>Comentário: {rating.comment}</span>
-                  </div>
-                );
-              })}
+                      <span
+                        style={{
+                          color,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                        }}
+                      >
+                        <p>Nota: {rating.rating}</p> {icon}
+                      </span>
+                      <span>{rating.comment}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 };

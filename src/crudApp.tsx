@@ -8,6 +8,8 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,12 +21,16 @@ const SubjectRatings = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [rating, setRating] = useState(null);
   const [comment, setComment] = useState("");
-
+  const [activeRating, setActiveRating] = useState(null); 
   const subjectsCollectionRef = collection(db, "disciplinas");
 
-  // Ler disciplinas do Firestore
+
   const fetchSubjects = async () => {
-    const data = await getDocs(subjectsCollectionRef);
+    const q = query(subjectsCollectionRef, orderBy("name")); 
+
+    const data = await getDocs(q);
+    console.log(data);
+
     setSubjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
@@ -32,7 +38,6 @@ const SubjectRatings = () => {
     fetchSubjects();
   }, []);
 
-  // Submeter avaliação
   const submitRating = async () => {
     if (!selectedSubject || rating === null || !comment) {
       toast.error("Preencha todos os campos!");
@@ -41,7 +46,6 @@ const SubjectRatings = () => {
 
     const subjectDoc = doc(db, "disciplinas", selectedSubject);
 
-    // Atualizar a disciplina com nova avaliação
     await updateDoc(subjectDoc, {
       ratings: arrayUnion({ rating, comment }),
     });
@@ -52,86 +56,140 @@ const SubjectRatings = () => {
     fetchSubjects();
   };
 
-  // Calcular média de avaliações
-
-
-  // Gerar carinhas e cores com base na nota
   const getFaceAndColor = (value) => {
-    if (value === 0) return { icon: <Angry />, color: "red" }; // Triste (vermelho)
-    if (value === 1) return { icon: <Angry />, color: "red" }; // Triste (vermelho)
-    if (value === 2) return { icon: <Frown />, color: "orange" }; // Neutro (laranja)
-    if (value === 3) return { icon: <Frown />, color: "orange" }; // Neutro (laranja)
-    if (value === 4) return { icon: <Annoyed />, color: "yellow" }; // Levemente feliz (amarelo)
-    if (value === 5) return { icon: <Annoyed />, color: "yellow" }; // Levemente feliz (amarelo)
-    if (value === 6) return { icon: <Meh />, color: "green" }; // Feliz (verde)
-    if (value === 7) return { icon: <Meh />, color: "green" }; // Feliz (verde)
-    if (value === 8) return { icon: <Smile />, color: "green" }; // Feliz (verde claro)
-    if (value === 9) return { icon: <Smile />, color: "green" }; // Muito feliz (verde claro)
-    return { icon: <Laugh />, color: "blue" }; // Extremamente feliz (azul)
+    if (value === 0) return { icon: <Angry />, color: "#E63946" }; // Triste (vermelho vibrante)
+    if (value === 1) return { icon: <Angry />, color: "#E63946" }; // Triste (vermelho vibrante)
+    if (value === 2) return { icon: <Frown />, color: "#FF7F11" }; // Neutro (laranja vibrante)
+    if (value === 3) return { icon: <Frown />, color: "#FF7F11" }; // Neutro (laranja vibrante)
+    if (value === 4) return { icon: <Annoyed />, color: "#FFD60A" }; // Levemente feliz (amarelo vibrante)
+    if (value === 5) return { icon: <Annoyed />, color: "#FFD60A" }; // Levemente feliz (amarelo vibrante)
+    if (value === 6) return { icon: <Meh />, color: "#80ED99" }; // Feliz (verde claro vibrante)
+    if (value === 7) return { icon: <Meh />, color: "#80ED99" }; // Feliz (verde claro vibrante)
+    if (value === 8) return { icon: <Smile />, color: "#38B000" }; // Muito feliz (verde forte)
+    if (value === 9) return { icon: <Smile />, color: "#38B000" }; // Muito feliz (verde forte)
+    return { icon: <Laugh />, color: "#4361EE" }; // Extremamente feliz (azul vibrante)
   };
 
   return (
-    <div className="container">
-      <h1>Avaliação de Disciplinas</h1>
+    <div
+      style={{
+        width: "100%",
+        height: "auto",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        className="card"
+        style={{
+          borderRadius: "8px",
+          width: "600px",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
+          background: "white",
+          padding: "24px",
+        }}
+      >
+        <h1>Avaliação de Disciplinas</h1>
 
-      <div>
-        <select
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
-        >
-          <option value="">Selecione uma disciplina</option>
-          {subjects.map((subject) => (
-            <option key={subject.id} value={subject.id}>
-              {subject.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
-        <h3>Escolha sua avaliação:</h3>
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "5px",
+            justifyContent: "start",
+            width: "100%",
           }}
         >
-          {[...Array(11)].map((_, i) => {
-            const { icon, color } = getFaceAndColor(i);
-            return (
-              <button
-                key={i}
-                onClick={() => setRating(i)}
-                style={{
-                  backgroundColor: color,
-                  border: "1px solid #ccc",
+          <select
+            style={{ padding: "8px", borderRadius: "8px" }}
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+          >
+            <option value="">Selecione uma disciplina</option>
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-                  fontSize: "20px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <span> {icon}</span>
-              </button>
-            );
-          })}
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexDirection: "column",
+            width: "100%",
+          }}
+        >
+          <h3>Escolha sua avaliação:</h3>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {[...Array(11)].map((_, i) => {
+              const { icon, color } = getFaceAndColor(i);
+              const isActive = activeRating === i; 
+
+              return (
+                <button
+                  className="emoji"
+                  key={i}
+                  onClick={() => {
+                    setRating(i);
+                    setActiveRating(i);
+                  }}
+                  style={{
+                    backgroundColor: color, 
+                    border: isActive ? "2px solid #000" : "none", 
+                    borderRadius: "8px",
+                    padding: "10px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: isActive ? "scale(1.1)" : "scale(1)", 
+                    transition:
+                      "transform 0.2s ease, background-color 0.2s ease",
+                  }}
+                >
+                  {icon}
+                </button>
+              );
+            })}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              gap: "15px",
+            }}
+          >
+            <textarea
+              style={{
+                height: "200px",
+                padding: "5px",
+                width: "100%",
+                resize: "none",
+              }}
+              placeholder="Comentário"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            <button className="button-send" onClick={submitRating}>
+              Enviar Avaliação
+            </button>
+          </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <textarea
-            style={{ height: "200px" }}
-            placeholder="Comentário"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          ></textarea>
-          <button onClick={submitRating}>Enviar Avaliação</button>
-        </div>
+
+        <ToastContainer />
       </div>
-
-      <ToastContainer />
     </div>
   );
 };
