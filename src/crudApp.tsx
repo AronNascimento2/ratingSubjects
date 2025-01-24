@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
 import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
 import LoginModal from "./loginModal";
+import "./crud.css"; // Adicione um arquivo de estilo para as media queries
 
 const SubjectRatings = () => {
   const [subjects, setSubjects] = useState([]);
@@ -24,7 +25,6 @@ const SubjectRatings = () => {
   const [activeRating, setActiveRating] = useState(null);
   const subjectsCollectionRef = collection(db, "disciplinas");
   const [rating, setRating] = useState<number>(0);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
   const fetchSubjects = async () => {
@@ -54,6 +54,8 @@ const SubjectRatings = () => {
       toast.success("Avaliação registrada com sucesso!");
       setRating(null);
       setComment("");
+      setActiveRating(null);
+      setSelectedSubject("");
     } catch (e) {
       toast.error(e);
     } finally {
@@ -77,44 +79,17 @@ const SubjectRatings = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "flex",
-        justifyContent: "center", // Centraliza o conteúdo horizontalmente
-        alignItems: "center", // Centraliza o conteúdo verticalmente
-        position: "relative", // Permite a posição do Login no canto superior direito
-      }}
-    >
-      <div
-        className="card"
-        style={{
-          borderRadius: "8px",
-          width: "600px",
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          alignItems: "center",
-          background: "white",
-          padding: "24px",
-        }}
-      >
+    <div className="main-container">
+      <div className="card">
         <h1>Avaliação de Disciplinas</h1>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "start",
-            width: "100%",
-          }}
-        >
+        <div style={{ width: "100%" }}>
           <select
-            style={{ padding: "8px", borderRadius: "8px" }}
+            className="select-subject"
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
           >
@@ -127,132 +102,72 @@ const SubjectRatings = () => {
           </select>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexDirection: "column",
-            width: "100%",
-          }}
-        >
+        <div className="rating-container">
           <h3>Escolha sua avaliação:</h3>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div style={{ display: "flex", gap: "10px" }}>
-              {Object.keys(iconColorMap).map((key) => {
-                const i = parseInt(key);
-                const { icon, color, nota } = iconColorMap[i];
-                const isActive = i === activeRating;
+          <div className="rating-options">
+            {Object.keys(iconColorMap).map((key) => {
+              const i = parseInt(key);
+              const { icon, color, nota } = iconColorMap[i];
+              const isActive = i === activeRating;
 
-                return (
+              return (
+                <div key={nota} className="rating-box">
                   <div
-                    key={nota}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
+                    className={`rating-icon ${isActive ? "active" : ""}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => {
+                      setActiveRating(i);
+                      setRating(i);
                     }}
                   >
-                    <div
-                      key={nota}
-                      onClick={() => {
-                        setActiveRating(i);
-                        setRating(i);
-                      }}
-                      style={{
-                        backgroundColor: color,
-                        border: isActive ? "2px solid #000" : "none",
-                        borderRadius: "8px",
-                        padding: "10px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transform: isActive ? "scale(1.1)" : "scale(1)",
-                        transition:
-                          "transform 0.2s ease, background-color 0.2s ease",
-                      }}
-                    >
-                      {icon}
-                    </div>
-                    <p>{nota}</p>
+                    {icon}
                   </div>
-                );
-              })}
-            </div>
-            <div
-              style={{
-                backgroundColor: iconColorMap[activeRating]?.color || "#fff",
-                borderRadius: "8px",
-                padding: "10px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transform: isChecked ? "scale(1.1)" : "scale(1)",
-                transition: "transform 0.2s ease, background-color 0.2s ease",
-              }}
-              onClick={() => {
-                setRating(activeRating);
-                setActiveRating(activeRating);
-              }}
-            >
-              {iconColorMap[activeRating]?.icon}
-            </div>
+                  <p>{nota}</p>
+                </div>
+              );
+            })}
           </div>
 
           <div
             style={{
+              width: "50px",
+              backgroundColor: iconColorMap[activeRating]?.color || "#fff",
+              borderRadius: "8px",
+              padding: "10px",
+              cursor: "pointer",
               display: "flex",
-              justifyContent: "center",
               alignItems: "center",
-              flexDirection: "column",
-              gap: "15px",
+              justifyContent: "center",
+              transition: "transform 0.2s ease, background-color 0.2s ease",
+            }}
+            onClick={() => {
+              setRating(activeRating);
+              setActiveRating(activeRating);
             }}
           >
-            <textarea
-              style={{
-                height: "200px",
-                padding: "5px",
-                width: "100%",
-                resize: "none",
-              }}
-              placeholder="Comentário"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            ></textarea>
-            <button
-              disabled={loading}
-              className="button-send"
-              onClick={submitRating}
-            >
-              Enviar Avaliação
-            </button>
+            {iconColorMap[activeRating]?.icon}
           </div>
+          <textarea
+            className="comment-box"
+            placeholder="Comentário"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          ></textarea>
+          <button
+            disabled={loading}
+            className="button-send"
+            onClick={submitRating}
+          >
+            Enviar Avaliação
+          </button>
         </div>
-
         <ToastContainer />
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          top: "5px",
-          right: "16px",
-        }}
-      >
-        <button className="button-send login" onClick={openModal}>
-          Login 
-        </button>
-      </div>
+      <button className="button-send login" onClick={openModal}>
+        Login
+      </button>
 
-      {/* Modal de Login */}
       <LoginModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
