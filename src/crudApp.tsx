@@ -14,15 +14,17 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
-import { getFaceAndColor } from "./getFaceAndColor";
+import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
 
 const SubjectRatings = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [rating, setRating] = useState(null);
   const [comment, setComment] = useState("");
   const [activeRating, setActiveRating] = useState(null);
   const subjectsCollectionRef = collection(db, "disciplinas");
+  const [rating, setRating] = useState<number>(0);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchSubjects = async () => {
     const q = query(subjectsCollectionRef, orderBy("name"));
@@ -35,23 +37,43 @@ const SubjectRatings = () => {
   }, []);
 
   const submitRating = async () => {
-    if (!selectedSubject || rating === null || !comment) {
-      toast.error("Preencha todos os campos!");
-      return;
+    try {
+      setLoading(true);
+      if (!selectedSubject || rating === null || !comment) {
+        toast.error("Preencha todos os campos!");
+        return;
+      }
+
+      const subjectDoc = doc(db, "disciplinas", selectedSubject);
+
+      await updateDoc(subjectDoc, {
+        ratings: arrayUnion({ rating, comment }),
+      });
+
+      toast.success("Avaliação registrada com sucesso!");
+      setRating(null);
+      setComment("");
+    } catch (e) {
+      toast.error(e);
+    } finally {
+      setTimeout(() => {
+        setLoading(false); // Libera o botão após 3 segundos
+      }, 2000); 
     }
-
-    const subjectDoc = doc(db, "disciplinas", selectedSubject);
-
-    await updateDoc(subjectDoc, {
-      ratings: arrayUnion({ rating, comment }),
-    });
-
-    toast.success("Avaliação registrada com sucesso!");
-    setRating(null);
-    setComment("");
-    fetchSubjects();
   };
-
+  const iconColorMap = {
+    0: { nota: 0, icon: <Angry />, color: "#fa0419" },
+    1: { nota: 1, icon: <Angry />, color: "#f51427" },
+    2: { nota: 2, icon: <Frown />, color: "#FF7F11" },
+    3: { nota: 3, icon: <Frown />, color: "#FF7F11" },
+    4: { nota: 4, icon: <Annoyed />, color: "#e0bc09" },
+    5: { nota: 5, icon: <Annoyed />, color: "#f0c909" },
+    6: { nota: 6, icon: <Meh />, color: "#80ED99" },
+    7: { nota: 7, icon: <Meh />, color: "#80ED99" },
+    8: { nota: 8, icon: <Smile />, color: "#38B000" },
+    9: { nota: 9, icon: <Smile />, color: "#38B000" },
+    10: { nota: 10, icon: <Laugh />, color: "#4361EE" },
+  };
   return (
     <div
       style={{
@@ -109,41 +131,74 @@ const SubjectRatings = () => {
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "center",
             }}
           >
-            {[...Array(11)].map((_, i) => {
-              const { icon, color } = getFaceAndColor(i);
-              const isActive = activeRating === i;
+            <div style={{ display: "flex", gap: "10px" }}>
+              {Object.keys(iconColorMap).map((key) => {
+                const i = parseInt(key);
+                const { icon, color, nota } = iconColorMap[i];
+                const isActive = i === activeRating;
 
-              return (
-                <button
-                  className="emoji"
-                  key={i}
-                  onClick={() => {
-                    setRating(i);
-                    setActiveRating(i);
-                  }}
-                  style={{
-                    backgroundColor: color,
-                    border: isActive ? "2px solid #000" : "none",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transform: isActive ? "scale(1.1)" : "scale(1)",
-                    transition:
-                      "transform 0.2s ease, background-color 0.2s ease",
-                  }}
-                >
-                  {icon}
-                </button>
-              );
-            })}
+                return (
+                  <div
+                    key={nota}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      key={nota}
+                      onClick={() => {
+                        setActiveRating(i);
+                        setRating(i);
+                      }}
+                      style={{
+                        backgroundColor: color,
+                        border: isActive ? "2px solid #000" : "none",
+                        borderRadius: "8px",
+                        padding: "10px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transform: isActive ? "scale(1.1)" : "scale(1)",
+                        transition:
+                          "transform 0.2s ease, background-color 0.2s ease",
+                      }}
+                    >
+                      {icon}
+                    </div>
+                    <p>{nota}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              style={{
+                backgroundColor: iconColorMap[activeRating]?.color || "#fff",
+                borderRadius: "8px",
+                padding: "10px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transform: isChecked ? "scale(1.1)" : "scale(1)",
+                transition: "transform 0.2s ease, background-color 0.2s ease",
+              }}
+              onClick={() => {
+                setRating(activeRating);
+                setActiveRating(activeRating);
+              }}
+            >
+              {iconColorMap[activeRating]?.icon}
+            </div>
           </div>
+
           <div
             style={{
               display: "flex",
@@ -164,7 +219,11 @@ const SubjectRatings = () => {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             ></textarea>
-            <button className="button-send" onClick={submitRating}>
+            <button
+              disabled={loading}
+              className="button-send"
+              onClick={submitRating}
+            >
               Enviar Avaliação
             </button>
           </div>

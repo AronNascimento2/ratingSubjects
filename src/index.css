@@ -50,6 +50,7 @@
 
 .button-send:disabled {
   cursor: default;
+  background-color: gray;
 }
 
 .button-send:focus {
