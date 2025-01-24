@@ -248,7 +248,7 @@ const SubjectRatings = () => {
         }}
       >
         <button className="button-send login" onClick={openModal}>
-          Login
+          Login 
         </button>
       </div>
 
