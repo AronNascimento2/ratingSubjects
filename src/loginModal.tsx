@@ -12,6 +12,7 @@ function LoginModal({ isOpen, onClose }) {
 
   const users = [
     { email: "kaji.priscila@gmail.com", password: "admin123" },
+    { email: "Priscila.kaji@unifesp.br", password: "user123" },
     { email: "admin", password: "user123" },
   ];
 
@@ -60,7 +61,7 @@ function LoginModal({ isOpen, onClose }) {
           <div
             style={{ display: "flex", justifyContent: "center", gap: "10px" }}
           >
-            <button onClick={handleLogin}  style={styles.button}>
+            <button onClick={handleLogin} style={styles.button}>
               Login
             </button>
 
