@@ -56,7 +56,7 @@ const AdminPage = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        marginTop:"10px"
       }}
     >
       <div
@@ -75,8 +75,8 @@ const AdminPage = () => {
           padding: "20px",
         }}
       >
-        <h1>Administração </h1>
-        <h2>Adicionar Disciplina</h2>
+        <h1 style={{ margin: 0 }}>Administração </h1>
+        <p style={{ fontWeight: "bold" }}>Adicionar Disciplina</p>
         <div
           style={{
             display: "flex",
@@ -100,7 +100,7 @@ const AdminPage = () => {
             className="button-send"
             onClick={addSubject}
             style={{
-              padding: "10px",
+              // padding: "10px",
               borderRadius: "4px",
               backgroundColor: "#007BFF",
               color: "white",
@@ -111,7 +111,7 @@ const AdminPage = () => {
             Adicionar
           </button>
         </div>
-        <h2>Disciplinas Avaliadas</h2>
+        <p style={{ fontWeight: "bold" }}>Disciplinas Avaliadas</p>
         <div
           style={{
             width: "100%",
@@ -145,7 +145,7 @@ const AdminPage = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   background: "#f0f0f0", // Cor de fundo mais suave
-                  padding: "8px", // Mais espaçamento para melhorar a estética
+                  // padding: "8px", // Mais espaçamento para melhorar a estética
                   marginBottom: "10px",
                   borderRadius: "8px",
                   width: "200px",
@@ -182,7 +182,7 @@ const AdminPage = () => {
                   flexDirection: "column",
                   width: "100%",
                   overflow: "auto",
-                  height: "300px",
+                  height: "320px",
                 }}
               >
                 {subject.ratings?.map((rating, index) => {
