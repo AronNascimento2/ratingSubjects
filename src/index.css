@@ -61,13 +61,7 @@
     rgba(50, 50, 93, 0.2) 0 6px 15px 0, rgba(0, 0, 0, 0.1) 0 2px 2px 0,
     rgba(50, 151, 211, 0.3) 0 0 0 4px;
 }
-.button-send.login {
-  background-color: #5cb85c;
-  width: 100px;
-  &:hover {
-    background-color: #209e20; 
-  }
-}
+
 .poppins-thin {
   font-family: "Poppins", serif;
   font-weight: 100;
