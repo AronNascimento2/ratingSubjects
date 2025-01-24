@@ -103,7 +103,7 @@
 @media (max-width: 768px) {
   .card {
     width: 95%;
-    margin-top: 100px;
+    margin-top: 80px;
   }
   .login {
     position: absolute;
