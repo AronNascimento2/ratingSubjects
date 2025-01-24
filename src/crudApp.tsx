@@ -15,6 +15,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
 import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
+import LoginModal from "./loginModal";
 
 const SubjectRatings = () => {
   const [subjects, setSubjects] = useState([]);
@@ -58,7 +59,7 @@ const SubjectRatings = () => {
     } finally {
       setTimeout(() => {
         setLoading(false); // Libera o botão após 3 segundos
-      }, 2000); 
+      }, 2000);
     }
   };
   const iconColorMap = {
@@ -74,13 +75,20 @@ const SubjectRatings = () => {
     9: { nota: 9, icon: <Smile />, color: "#38B000" },
     10: { nota: 10, icon: <Laugh />, color: "#4361EE" },
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const navigate = useNavigate();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   return (
     <div
       style={{
         width: "100%",
-        height: "auto",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "center", // Centraliza o conteúdo horizontalmente
+        alignItems: "center", // Centraliza o conteúdo verticalmente
+        position: "relative", // Permite a posição do Login no canto superior direito
       }}
     >
       <div
@@ -231,6 +239,21 @@ const SubjectRatings = () => {
 
         <ToastContainer />
       </div>
+
+      <div
+        style={{
+          position: "absolute",
+          top: "5px",
+          right: "16px",
+        }}
+      >
+        <button className="button-send login" onClick={openModal}>
+          Login
+        </button>
+      </div>
+
+      {/* Modal de Login */}
+      <LoginModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };

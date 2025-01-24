@@ -14,9 +14,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
 import { getFaceAndColor } from "./getFaceAndColor";
 import { calculateAverage } from "./calculateAverage";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
+  const [subjects, setSubjects] = useState([]);
   const [subjectName, setSubjectName] = useState("");
+  const navigate = useNavigate();
 
   const subjectsCollectionRef = collection(db, "disciplinas");
 
@@ -47,8 +50,10 @@ const AdminPage = () => {
   useEffect(() => {
     fetchSubjects();
   }, []);
-  const [subjects, setSubjects] = useState([]);
-
+  const handleLogout = () => {
+    navigate("/");
+    localStorage.removeItem("isAuthenticated");
+  };
   return (
     <div
       style={{
@@ -56,7 +61,7 @@ const AdminPage = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        marginTop:"10px"
+        marginTop: "10px",
       }}
     >
       <div
@@ -220,6 +225,17 @@ const AdminPage = () => {
         </div>
 
         <ToastContainer />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: "5px",
+          right: "16px",
+        }}
+      >
+        <button onClick={() => handleLogout()} className="button-send login">
+          Sair
+        </button>
       </div>
     </div>
   );
