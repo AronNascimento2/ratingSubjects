@@ -14,23 +14,19 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "./firebaseConfig";
-import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
+import { getFaceAndColor } from "./getFaceAndColor";
 
 const SubjectRatings = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [rating, setRating] = useState(null);
   const [comment, setComment] = useState("");
-  const [activeRating, setActiveRating] = useState(null); 
+  const [activeRating, setActiveRating] = useState(null);
   const subjectsCollectionRef = collection(db, "disciplinas");
 
-
   const fetchSubjects = async () => {
-    const q = query(subjectsCollectionRef, orderBy("name")); 
-
+    const q = query(subjectsCollectionRef, orderBy("name"));
     const data = await getDocs(q);
-    console.log(data);
-
     setSubjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
@@ -54,20 +50,6 @@ const SubjectRatings = () => {
     setRating(null);
     setComment("");
     fetchSubjects();
-  };
-
-  const getFaceAndColor = (value) => {
-    if (value === 0) return { icon: <Angry />, color: "#E63946" }; // Triste (vermelho vibrante)
-    if (value === 1) return { icon: <Angry />, color: "#E63946" }; // Triste (vermelho vibrante)
-    if (value === 2) return { icon: <Frown />, color: "#FF7F11" }; // Neutro (laranja vibrante)
-    if (value === 3) return { icon: <Frown />, color: "#FF7F11" }; // Neutro (laranja vibrante)
-    if (value === 4) return { icon: <Annoyed />, color: "#FFD60A" }; // Levemente feliz (amarelo vibrante)
-    if (value === 5) return { icon: <Annoyed />, color: "#FFD60A" }; // Levemente feliz (amarelo vibrante)
-    if (value === 6) return { icon: <Meh />, color: "#80ED99" }; // Feliz (verde claro vibrante)
-    if (value === 7) return { icon: <Meh />, color: "#80ED99" }; // Feliz (verde claro vibrante)
-    if (value === 8) return { icon: <Smile />, color: "#38B000" }; // Muito feliz (verde forte)
-    if (value === 9) return { icon: <Smile />, color: "#38B000" }; // Muito feliz (verde forte)
-    return { icon: <Laugh />, color: "#4361EE" }; // Extremamente feliz (azul vibrante)
   };
 
   return (
@@ -133,7 +115,7 @@ const SubjectRatings = () => {
           >
             {[...Array(11)].map((_, i) => {
               const { icon, color } = getFaceAndColor(i);
-              const isActive = activeRating === i; 
+              const isActive = activeRating === i;
 
               return (
                 <button
@@ -144,15 +126,15 @@ const SubjectRatings = () => {
                     setActiveRating(i);
                   }}
                   style={{
-                    backgroundColor: color, 
-                    border: isActive ? "2px solid #000" : "none", 
+                    backgroundColor: color,
+                    border: isActive ? "2px solid #000" : "none",
                     borderRadius: "8px",
                     padding: "10px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    transform: isActive ? "scale(1.1)" : "scale(1)", 
+                    transform: isActive ? "scale(1.1)" : "scale(1)",
                     transition:
                       "transform 0.2s ease, background-color 0.2s ease",
                   }}
