@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./LoginModal.css";
+import "./login-modal.css";
 
 function LoginModal({ isOpen, onClose }) {
   const [email, setEmail] = useState("");

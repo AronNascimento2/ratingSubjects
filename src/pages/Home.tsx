@@ -16,27 +16,36 @@ import "react-toastify/dist/ReactToastify.css";
 import { db } from "../config/firebaseConfig";
 import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
 import LoginModal from "../components/LoginModal";
-import "./homePage.css";
+import "./home-page.css";
 
-const SubjectRatings = () => {
+const HomePage = () => {
+  const subjectsCollectionRef = collection(db, "disciplinas"); 
+  // o useState é um gerenciador de estado
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeRating, setActiveRating] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [comment, setComment] = useState("");
-  const [activeRating, setActiveRating] = useState(null);
-  const subjectsCollectionRef = collection(db, "disciplinas");
   const [rating, setRating] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
+  //funções para abrir e fechar o modal do botao login
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  //conecta ao firebase para retornar as diciplinas
   const fetchSubjects = async () => {
     const q = query(subjectsCollectionRef, orderBy("name"));
     const data = await getDocs(q);
     setSubjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   };
 
+  //sempre que o componte  é atualizado ele faz a chamda para o firebase 
   useEffect(() => {
     fetchSubjects();
   }, []);
 
+  //função para envio da nota disciplina e comentário
   const submitRating = async () => {
     try {
       setLoading(true);
@@ -64,6 +73,8 @@ const SubjectRatings = () => {
       }, 2000);
     }
   };
+
+  //objeto criado para dar cor e emoji aos ícones de notas
   const iconColorMap = {
     0: { nota: 0, icon: <Angry />, color: "#fa0419" },
     1: { nota: 1, icon: <Angry />, color: "#f51427" },
@@ -78,10 +89,6 @@ const SubjectRatings = () => {
     10: { nota: 10, icon: <Laugh />, color: "#4361EE" },
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
   return (
     <div className="main-container">
       <div className="card">
@@ -173,4 +180,4 @@ const SubjectRatings = () => {
   );
 };
 
-export default SubjectRatings;
+export default HomePage;

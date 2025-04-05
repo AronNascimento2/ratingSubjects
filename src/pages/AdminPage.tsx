@@ -11,7 +11,7 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import "./adminPage.css";
+import "./admin-page.css";
 import { db } from "../config/firebaseConfig";
 import { getFaceAndColor } from "../utils/getFaceAndColor";
 import { calculateAverage } from "../utils/calculateAverage";

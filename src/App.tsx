@@ -1,16 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SubjectRatings from "./pages/Home";
 import PrivateRoute from "./routes/privateRoute";
 import AdminPage from "./pages/AdminPage";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<SubjectRatings />} />
+        {/* Rota pública: acessível por todos os usuários */}
+        <Route path="/" element={<Home />} />
+
+
+        {/* Rota privada: protegida por autenticação */}
         <Route
           path="/admin"
-          element={<PrivateRoute element={<AdminPage />} />} // Protegendo a rota
+          element={<PrivateRoute element={<AdminPage />} />}
         />{" "}
       </Routes>
     </Router>
