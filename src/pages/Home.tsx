@@ -13,10 +13,10 @@ import {
 } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { db } from "./firebaseConfig";
+import { db } from "../config/firebaseConfig";
 import { Angry, Annoyed, Frown, Laugh, Meh, Smile } from "lucide-react";
-import LoginModal from "./loginModal";
-import "./crud.css"; // Adicione um arquivo de estilo para as media queries
+import LoginModal from "../components/LoginModal";
+import "./homePage.css";
 
 const SubjectRatings = () => {
   const [subjects, setSubjects] = useState([]);

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SubjectRatings from "./crudApp";
-import AdminPage from "./AdminPage";
-import PrivateRoute from "./privateRoute";
+import SubjectRatings from "./pages/Home";
+import PrivateRoute from "./routes/privateRoute";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   return (

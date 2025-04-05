@@ -16,8 +16,6 @@
   border: 1px solid black;
 }
 .button-send {
-  /* CSS */
-
   appearance: button;
   backface-visibility: hidden;
   background-color: #405cf5;
@@ -47,7 +45,7 @@
   touch-action: manipulation;
   width: 200px;
   &:hover {
-    background-color: #3c4ca7; 
+    background-color: #3c4ca7;
   }
 }
 

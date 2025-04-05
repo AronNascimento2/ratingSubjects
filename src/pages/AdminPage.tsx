@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-
 import { useEffect, useState } from "react";
 import {
   collection,
@@ -11,11 +10,11 @@ import {
 } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { db } from "./firebaseConfig";
-import { getFaceAndColor } from "./getFaceAndColor";
-import { calculateAverage } from "./calculateAverage";
 import { useNavigate } from "react-router-dom";
-import "./admin.css"; // Adicione um arquivo de estilo para as media queries
+import "./adminPage.css";
+import { db } from "../config/firebaseConfig";
+import { getFaceAndColor } from "../utils/getFaceAndColor";
+import { calculateAverage } from "../utils/calculateAverage";
 
 const AdminPage = () => {
   const [subjects, setSubjects] = useState([]);
@@ -96,7 +95,7 @@ const AdminPage = () => {
                   return (
                     <>
                       <div style={{ fontWeight: "bold", color: "#333" }}>
-                        Média:{" "}
+                        Média:
                       </div>
                       <p style={{ color, margin: 0, fontSize: "18px" }}>
                         {average}
